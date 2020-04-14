@@ -1,17 +1,18 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from "react";
+import ReactDOM from "react-dom";
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+const rootNode = document.querySelector("#root");
+const year = 2020;
+const greeting2 = (
+  <div>
+    <h1>Hi yesso</h1>
+    <p>welcome from Sousse</p>
+  </div>
 );
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+const isReactUser = true;
+const greeting = <h1>Hello react in {year}</h1>;
+if (isReactUser) {
+  ReactDOM.render(greeting2, rootNode);
+} else {
+  ReactDOM.render(<h1>Hello JavaScript </h1>, rootNode);
+}
