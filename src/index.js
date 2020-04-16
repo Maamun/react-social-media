@@ -1,26 +1,42 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 
-function Person(props) {
-  function handlePersonClick(event) {
-    alert(props.person);
-    console.log("event", event);
-  }
-  return <li onClick={handlePersonClick}>{props.person}</li>;
-}
 function App() {
-  const list = ["souad", "nosnos", "yesso"];
+  const [developer, setDeveloper] = useState({
+    language: "javascript",
+    experience: 0,
+    employed: true,
+  });
+  function handleEmploymentStatus() {
+    setDeveloper((prevState) => ({
+      ...prevState,
+      isEmployed: !prevState.isEmployed,
+    }));
+  }
+  function handleLanguageChange() {
+    setDeveloper({
+      language: "ReasonML",
+      experience: 0,
+      isEmployed: false,
+    });
+  }
   function handleInputChange(event) {
-    const inputValue = event.target.value;
-    console.log(inputValue);
+    setDeveloper({
+      ...developer,
+      experience: event.target.value,
+    });
   }
   return (
-    <ul>
-      {list.map((person, i) => (
-        <Person key={i} person={person} />
-      ))}
-      <input onClick={handleInputChange} />
-    </ul>
+    <div>
+      <button onClick={handleEmploymentStatus}>Toggle Employment Status</button>
+      <button onClick={handleLanguageChange}>Change Language</button>
+      <input type="number" min="0" onChange={handleInputChange} />
+      <p>I am learning {developer.language}</p>
+      <p>I have {developer.experience} years of experience.</p>
+      <p>
+        Employment status: {developer.isEmployed ? "Employed" : "Unemployed"}
+      </p>
+    </div>
   );
 }
 const rootNode = document.querySelector("#root");
