@@ -12,9 +12,24 @@ function Header(props) {
 function Layout(props) {
   return <div style={{ background: "palegoldenrod" }}>{props.children}</div>;
 }
+const isAuth = true;
+function Login() {
+  return <p>Please login!!</p>;
+}
+function SignOut() {
+  return <button>sign out</button>;
+}
 ReactDOM.render(
   <Layout>
-    <Header username="nosnos" />
+    {isAuth ? (
+      <>
+        <Header username="nosnos" />
+        <SignOut />
+      </>
+    ) : (
+      <Login />
+    )}
+    {/*isAuth && <SignOut /> */}
     <footer>copyright 2020</footer>
   </Layout>,
   rootNode
