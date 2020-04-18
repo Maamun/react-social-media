@@ -1,35 +1,39 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-
-const BASE_URL = `https://jsonplaceholder.typicode.com/posts/`;
+const rootNode = document.querySelector("#root");
 
 function App() {
-  const [post, setPost] = useState({});
-  const [id, setId] = useState(1);
-  const [idFromButton, setIdFromButton] = useState(1);
-
+  const [mousePosition, setMousePosition] = useState({
+    x: 0,
+    y: 0,
+  });
+  function handleMousePosition(e) {
+    console.log("Mouse event");
+    setMousePosition({
+      x: e.clientX,
+      y: e.clientY,
+    });
+  }
   useEffect(() => {
-    fetch(`${BASE_URL}${idFromButton}`)
-      .then((res) => res.json())
-      .then((post) => setPost(post));
-  }, [id, idFromButton]);
-  function handleIdChange(e) {
-    setId(e.target.value);
-  }
-  function handleFetchPost() {
-    setIdFromButton(id);
-  }
+    console.log("useEffect called");
+    window.addEventListener("mousemove", handleMousePosition);
+    return () => {
+      console.log("component Unmounting code");
+
+      window.removeEventListener("mousemove", handleMousePosition);
+    };
+  }, []);
   return (
-    <div>
-      <input type="text" value={id} onChange={handleIdChange} />
-      <button onClick={handleFetchPost}>Fetch Post</button>
-      <p>
-        {post.id}: {post.title}
-      </p>
-    </div>
+    <p>
+      X: {mousePosition.x}, Y: {mousePosition.y}
+    </p>
   );
 }
 
-const rootNode = document.querySelector("#root");
-
+function NewPage() {
+  return <div>Hi from new</div>;
+}
 ReactDOM.render(<App />, rootNode);
+setTimeout(() => {
+  ReactDOM.render(<NewPage />, rootNode);
+}, 4000);
