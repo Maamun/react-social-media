@@ -1,39 +1,63 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-const rootNode = document.querySelector("#root");
+require("dotenv").config();
 
+const rootNode = document.querySelector("#root");
+const BASE_URL = `https://api.github.com/users/`;
 function App() {
-  const [mousePosition, setMousePosition] = useState({
-    x: 0,
-    y: 0,
-  });
-  function handleMousePosition(e) {
-    console.log("Mouse event");
-    setMousePosition({
-      x: e.clientX,
-      y: e.clientY,
-    });
-  }
+  const [user, setUser] = useState(null);
+  const [username, setUsername] = useState("tylermcginnis");
+  const searchInput = useRef();
+
   useEffect(() => {
     console.log("useEffect called");
-    window.addEventListener("mousemove", handleMousePosition);
-    return () => {
-      console.log("component Unmounting code");
-
-      window.removeEventListener("mousemove", handleMousePosition);
-    };
+    getUser();
   }, []);
+
+  //GitHub API Authentication
+  async function getUser() {
+    const res = await fetch(`${BASE_URL}${username}`, {
+      headers: {
+        authorization: `${process.env.API_KEY}`,
+      },
+    });
+    const user = await res.json();
+    setUser(user);
+  }
+  function handleInputChange(e) {
+    setUsername(e.target.value);
+  }
+  function handleClearInput() {
+    searchInput.current.value = "";
+    searchInput.current.focus();
+  }
   return (
-    <p>
-      X: {mousePosition.x}, Y: {mousePosition.y}
-    </p>
+    <>
+      <input
+        type="text"
+        placeholder="Input Username"
+        onChange={handleInputChange}
+        ref={searchInput}
+      />
+      <button onClick={getUser}>Search</button>
+      <button onClick={handleClearInput}>Clear</button>
+      {user ? (
+        <>
+          <h2>{user.name}</h2>
+          <p>{user.bio}</p>
+          <img
+            src={user.avatar_url}
+            alt="avatar"
+            style={{
+              height: 150,
+            }}
+          />
+        </>
+      ) : (
+        <p>Loading ...</p>
+      )}
+    </>
   );
 }
 
-function NewPage() {
-  return <div>Hi from new</div>;
-}
 ReactDOM.render(<App />, rootNode);
-setTimeout(() => {
-  ReactDOM.render(<NewPage />, rootNode);
-}, 4000);
