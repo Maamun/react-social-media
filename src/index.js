@@ -3,11 +3,8 @@ import ReactDOM from "react-dom";
 require("dotenv").config();
 const rootNode = document.querySelector("#root");
 
-function App() {
-  const [search, setSearch] = useState("");
-  const [query, setQuery] = useState("");
+function useGiphy(query) {
   const [gifs, setGifs] = useState([]);
-  const inputEl = useRef();
   useEffect(() => {
     async function fetchData() {
       try {
@@ -29,6 +26,13 @@ function App() {
       fetchData();
     }
   }, [query]);
+  return gifs;
+}
+function App() {
+  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
+  const gifs = useGiphy(query);
+  const inputEl = useRef();
   function onSubmit(e) {
     e.preventDefault();
     setQuery(search);
