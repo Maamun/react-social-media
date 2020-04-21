@@ -1,35 +1,63 @@
-import React, { Component, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
-
-const BASE_URL = `https://jsonplaceholder.typicode.com/posts/`;
-
-function App() {
-  const [post, setPost] = useState({});
-  const [id, setId] = useState(1);
-  const [idFromButton, setIdFromButton] = useState(1);
-
-  useEffect(() => {
-    fetch(`${BASE_URL}${idFromButton}`)
-      .then((res) => res.json())
-      .then((post) => setPost(post));
-  }, [id, idFromButton]);
-  function handleIdChange(e) {
-    setId(e.target.value);
-  }
-  function handleFetchPost() {
-    setIdFromButton(id);
-  }
-  return (
-    <div>
-      <input type="text" value={id} onChange={handleIdChange} />
-      <button onClick={handleFetchPost}>Fetch Post</button>
-      <p>
-        {post.id} {post.title}
-      </p>
-    </div>
-  );
-}
+require("dotenv").config();
 
 const rootNode = document.querySelector("#root");
+const BASE_URL = `https://api.github.com/users/`;
+function App() {
+  const [user, setUser] = useState(null);
+  const [username, setUsername] = useState("tylermcginnis");
+  const searchInput = useRef();
+
+  useEffect(() => {
+    console.log("useEffect called");
+    getUser();
+  }, []);
+
+  //GitHub API Authentication
+  async function getUser() {
+    const res = await fetch(`${BASE_URL}${username}`, {
+      headers: {
+        authorization: `${process.env.API_KEY}`,
+      },
+    });
+    const user = await res.json();
+    setUser(user);
+  }
+  function handleInputChange(e) {
+    setUsername(e.target.value);
+  }
+  function handleClearInput() {
+    searchInput.current.value = "";
+    searchInput.current.focus();
+  }
+  return (
+    <>
+      <input
+        type="text"
+        placeholder="Input Username"
+        onChange={handleInputChange}
+        ref={searchInput}
+      />
+      <button onClick={getUser}>Search</button>
+      <button onClick={handleClearInput}>Clear</button>
+      {user ? (
+        <>
+          <h2>{user.name}</h2>
+          <p>{user.bio}</p>
+          <img
+            src={user.avatar_url}
+            alt="avatar"
+            style={{
+              height: 150,
+            }}
+          />
+        </>
+      ) : (
+        <p>Loading ...</p>
+      )}
+    </>
+  );
+}
 
 ReactDOM.render(<App />, rootNode);

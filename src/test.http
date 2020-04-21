@@ -1,1 +1,9 @@
-Get https://api.github.com/users/tylermcginnis
+https://api.github.com/users/tylermcginnis
+
+###
+
+https://swapi.dev/api/films/
+
+###
+
+https://api.giphy.com/v1/gifs/search?api_key=dZAJKUL2O5B9ImWCUZiAKLgNEBPUbjYw&q=cookie&limit=1&offset=0&rating=G&lang=en

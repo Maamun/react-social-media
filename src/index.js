@@ -1,61 +1,66 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
 require("dotenv").config();
-
 const rootNode = document.querySelector("#root");
-const BASE_URL = `https://api.github.com/users/`;
+
 function App() {
-  const [user, setUser] = useState(null);
-  const [username, setUsername] = useState("tylermcginnis");
-  const searchInput = useRef();
-
+  const [search, setSearch] = useState("");
+  const [query, setQuery] = useState("");
+  const [gifs, setGifs] = useState([]);
+  const inputEl = useRef();
   useEffect(() => {
-    console.log("useEffect called");
-    getUser();
-  }, []);
-
-  //GitHub API Authentication
-  async function getUser() {
-    const res = await fetch(`${BASE_URL}${username}`, {
-      headers: {
-        authorization: `${process.env.API_KEY}`,
-      },
-    });
-    const user = await res.json();
-    setUser(user);
+    async function fetchData() {
+      try {
+        const json = await (
+          await fetch(
+            `https://api.giphy.com/v1/gifs/search?api_key=${process.env.REACT_APP_API_GIF_KEY}&q=${query}&limit=10&offset=0&rating=G&lang=en`
+          )
+        ).json();
+        setGifs(
+          json.data.map((item) => {
+            return item.images.preview.mp4;
+          })
+        );
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    if (query !== "") {
+      fetchData();
+    }
+  }, [query]);
+  function onSubmit(e) {
+    e.preventDefault();
+    setQuery(search);
   }
-  function handleInputChange(e) {
-    setUsername(e.target.value);
-  }
-  function handleClearInput() {
-    searchInput.current.value = "";
-    searchInput.current.focus();
+  function handleResetBtn() {
+    inputEl.current.value = "";
+    inputEl.current.focus();
   }
   return (
     <>
-      <input
-        type="text"
-        placeholder="Input Username"
-        onChange={handleInputChange}
-        ref={searchInput}
-      />
-      <button onClick={getUser}>Search</button>
-      <button onClick={handleClearInput}>Clear</button>
-      {user ? (
-        <>
-          <h2>{user.name}</h2>
-          <p>{user.bio}</p>
-          <img
-            src={user.avatar_url}
-            alt="avatar"
-            style={{
-              height: 150,
-            }}
-          />
-        </>
-      ) : (
-        <p>Loading ...</p>
-      )}
+      <h1>Async React Hooks</h1>
+      <form onSubmit={onSubmit}>
+        <input
+          type="text"
+          value={search}
+          ref={inputEl}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <button type="submit">Search</button>
+        <button onClick={handleResetBtn}>Reset</button>
+      </form>
+      <br />
+      {gifs.map((item) => (
+        <video
+          key={item}
+          src={item}
+          style={{ width: "30%" }}
+          autoPlay
+          loop
+          muted
+        ></video>
+      ))}
     </>
   );
 }
